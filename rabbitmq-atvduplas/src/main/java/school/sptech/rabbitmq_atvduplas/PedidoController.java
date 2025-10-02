@@ -1,5 +1,6 @@
 package school.sptech.rabbitmq_atvduplas;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -10,18 +11,18 @@ import school.sptech.rabbitmq_atvduplas.rabbitConfig.PedidoProducer;
 
 @RestController
 @RequestMapping("/pedidos")
+@RequiredArgsConstructor
 public class PedidoController {
 
     private final PedidoProducer pedidoProducer;
 
-    public PedidoController(PedidoProducer pedidoProducer) {
-        this.pedidoProducer = pedidoProducer;
-    }
+    private final PedidoService pedidoService;
 
     @PostMapping
-    public ResponseEntity<String> criarPedido(@RequestBody Pedido pedido) {
-        pedidoProducer.enviarPedido(pedido);
-        return ResponseEntity.ok("Pedido enviado com sucesso!");
+    public ResponseEntity<Pedido> criarPedido(@RequestBody Pedido pedido) {
+        Pedido pedidoValidado = pedidoService.criarPedido(pedido);
+        pedidoProducer.enviarPedido(pedidoValidado);
+        return ResponseEntity.ok(pedidoValidado);
     }
 }
 
