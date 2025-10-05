@@ -7,6 +7,6 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Prato extends Item{
+public class  Prato extends Item{
     String nacionalidade;
 }

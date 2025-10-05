@@ -49,23 +49,34 @@ def callback(ch, method, properties, body):
     salvar_pedido(pedido)
     print(f"Pedido recebido -> Mesa {pedido['mesa']}")
 
+import pika
+
 def iniciar_consumidor():
     try:
-        connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+        credentials = pika.PlainCredentials('guest', 'guest')
+        connection = pika.BlockingConnection(
+            pika.ConnectionParameters(
+                host='localhost',
+                port=5672,
+                credentials=credentials
+            )
+        )
+
         channel = connection.channel()
         channel.queue_declare(queue='pedidos_queue', durable=True)
-        
+
         channel.basic_consume(
             queue='pedidos_queue',
             on_message_callback=callback,
             auto_ack=True
         )
-        
-        print(" Conectado ao RabbitMQ - Aguardando pedidos do Java...")
+
+        print("✅ Conectado ao RabbitMQ - Aguardando pedidos do Java...")
         channel.start_consuming()
+
     except Exception as e:
-        print(f" Erro RabbitMQ: {e}")
-        print("  Verifique se o RabbitMQ está rodando em localhost:5672")
+        print(f"❌ Erro RabbitMQ: {e}")
+        print("⚠️ Verifique se o RabbitMQ está rodando em localhost:5672 e se o usuário/senha estão corretos.")
 
 @app.get("/pedidos")
 def get_pedidos(mesa: int = Query(None, description="Filtrar por mesa específica")):

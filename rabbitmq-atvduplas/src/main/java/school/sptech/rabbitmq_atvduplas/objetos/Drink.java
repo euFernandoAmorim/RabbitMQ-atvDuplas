@@ -8,5 +8,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Drink extends Item{
-    String tipo;
+    String tipoBebida;
 }
